@@ -1,34 +1,19 @@
-var mongoose = require('mongoose');
-var userSchema = require('./userSchema');
+// var mongoose = require('mongoose');
 
-mongoose.Promise = global.Promise;
+// mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost:37000/TodoApp');
+// mongoose.connect('mongodb://localhost:37000/TodoApp');
 
+var {mongoose} = require('./db/mongoose');
 
-
-
-
-var Todo = mongoose.model('Todo', {
-  text: {
-    //type: string
-    type: String,
-    required: true,
-    minlength: 3,
-    trim: true
+var Todo= require('./models/todo');
+var User = require('./models/user');
 
 
-  },
-  completed: {
-    // type: boolean
-    type: Boolean,
-    default: false
-  },
-  completedAt: {
-    type: Number,
-    default: null
-  }
-});
+
+
+
+
 
 var newTodo = new Todo({
   text: 'cooking',
@@ -43,9 +28,9 @@ var newTodo = new Todo({
 //   console.log(err);
 // });
 
-var User = mongoose.model('User', userSchema);
 
-var newUser = new User({email: 'user@ab.com'});
+
+var newUser = new User({email: 'user@ab1.com'});
 
 newUser.save().then((user)=>{
   console.log(user);
