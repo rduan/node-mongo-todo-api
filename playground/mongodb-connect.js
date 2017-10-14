@@ -5,6 +5,8 @@ const {MongoClient, ObjectID} = require('mongodb');
 MongoClient.connect('mongodb://localhost:37000/TodoApp', (err, db)=>{
   if(err) {
     console.log('Unable to connect mongodb on 37000');
+    console.log(err);
+    return;
   }
 
   console.log('connect to mongo on 37000');
