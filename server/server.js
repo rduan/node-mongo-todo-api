@@ -21,7 +21,7 @@ app.post('/todos', (req, res) => {
 
     res.status(200).send(doc);
   }, (err) => {
-    console.log(err);
+    // console.log(err);
     res.status(400).send(err);
   })
 });
@@ -56,3 +56,5 @@ app.listen(3000, () => {
 // }, (err)=>{
 //   console.log(err);
 // })
+
+module.exports = app;
