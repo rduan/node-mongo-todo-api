@@ -163,14 +163,14 @@ describe('PATCH /todos/:id', ()=>{
   });
 
   it('should clear completeAt when todo is not completed', (done)=>{
-    var hexId = todos[0]._id.toHexString();
+    var hexId = todos[1]._id.toHexString();
     
         request(app)
         .patch(`/todos/${hexId}`)
         .send({completed: false})
         .expect(200)
         .expect(res=>{
-          expect(res.body.todo.text).toBe(todos[0].text);
+          expect(res.body.todo.text).toBe(todos[1].text);
           expect(res.body.todo.completed).toBe(false);
           expectChai(res.body.todo.completedAt).to.be.a('null');
         }).end(done);
