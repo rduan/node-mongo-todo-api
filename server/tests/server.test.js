@@ -2,7 +2,8 @@ const expect = require('expect');
 const chai = require('chai');
 const expectChai = chai.expect;
 const request = require('supertest');
-const {ObjectID} = require('mongodb');
+var { ObjectID } = require('mongodb');
+
 
 const app = require('../server');
 const Todo = require('../models/todo');
@@ -174,7 +175,7 @@ describe('PATCH /todos/:id', ()=>{
           expect(res.body.todo.completed).toBe(false);
           expectChai(res.body.todo.completedAt).to.be.a('null');
         }).end(done);
-  })
-})
+  });
+});
 
 
