@@ -1,7 +1,5 @@
 require('./config/config');
 
-
-
 var express = require('express');
 var bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -31,6 +29,23 @@ app.post('/todos', (req, res) => {
   }, (err) => {
     // console.log(err);
     res.status(400).send(err);
+  })
+});
+
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  
+  // console.log(req.body);
+  var user = new User(body);
+
+  user.save().then((user) => {
+
+    res.status(200).send(user);
+  }, (err) => {
+    // console.log(err);
+    res.status(400).send(err);
+  }).catch(err=>{
+    console.log(err);
   })
 });
 
