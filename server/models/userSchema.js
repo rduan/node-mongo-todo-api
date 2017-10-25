@@ -1,8 +1,11 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 
-userSchema= new Schema({
+const userSchema= new Schema({
   email: {
     type:String, 
     required: true,
@@ -33,6 +36,22 @@ userSchema= new Schema({
     }
   }]
   
-})
+});
+
+userSchema.methods.generateAuthToken = function() {
+  var user = this;
+  var access = 'auth';
+  var token = jwt.sign({_id: user._id.toHexString(), access},'secret').toString();
+
+  user.tokens.push({access, token});
+
+  return user.save().then(()=>{
+    return token;
+  });
+}
+
+// PredictorSchema.methods.setQuestions = function(questions){
+//   this.collectors.each((c) => c.setQuestions(questions));
+// };
 
 module.exports = userSchema;
