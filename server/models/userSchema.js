@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 
 const userSchema= new Schema({
   email: {
@@ -48,7 +49,14 @@ userSchema.methods.generateAuthToken = function() {
   return user.save().then(()=>{
     return token;
   });
-}
+};
+
+userSchema.methods.toJSON = function() {
+  var user = this;
+  var userObject = user.toObject();
+
+  return _.pick(userObject, ['_id', 'email']);
+};
 
 // PredictorSchema.methods.setQuestions = function(questions){
 //   this.collectors.each((c) => c.setQuestions(questions));
