@@ -32,6 +32,21 @@ app.post('/todos', (req, res) => {
   })
 });
 
+//
+app.get('/users/me', (req,res)=>{
+  var token = req.header('x-auth');
+
+  User.findByToken(token).then((user)=>{
+    if(!user) {
+      // console.log('can not find');
+      return Promise.reject();
+    }
+    res.send(user);
+  }).catch((e)=>{
+    res.status(401).send();
+  });
+});
+
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   

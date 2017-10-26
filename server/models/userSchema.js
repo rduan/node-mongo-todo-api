@@ -62,4 +62,30 @@ userSchema.methods.toJSON = function() {
 //   this.collectors.each((c) => c.setQuestions(questions));
 // };
 
+userSchema.statics.findByToken = function(token) {
+
+  console.log('xxxx---  findbyToken')
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'secret');
+  } catch (e) {
+    // console.log('catought exception');
+    // console.log(e);
+    // return new Promise((resolve, reject)=>{
+    //   reject()
+    // })
+    return Promise.reject();
+    
+  }
+
+  console.log('ok, found token: ', decoded);
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
 module.exports = userSchema;

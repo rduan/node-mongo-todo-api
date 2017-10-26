@@ -3,3 +3,6 @@
 #mongo/bin/
 ./mongod --dbpath ~/mongo-data --port 37000
 
+#
+yarn start
+
