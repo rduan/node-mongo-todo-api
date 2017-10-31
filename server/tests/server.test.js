@@ -8,6 +8,7 @@ var { ObjectID } = require('mongodb');
 const app = require('../server');
 const Todo = require('../models/todo');
 const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
+const User = require('./../models/user');
 
 
 beforeEach(populateTodos);
@@ -28,7 +29,7 @@ describe('Post/todos',()=>{
         }
 
         Todo.find({text}).then((todos)=>{
-          console.log('iam ahere')
+          // console.log('iam ahere')
           expect(todos.length).toBe(1);
           expect(todos[0].text).toBe(text);
           done();
@@ -63,7 +64,7 @@ describe('GET /users/me', ()=>{
   beforeEach(populateUsers);
 
   it('should return user by valid token',(done)=>{
-    console.log(users[1]);
+    // console.log(users[1]);
     // console.log(users[1].tokens[0].token);
 
     request(app)
@@ -71,7 +72,7 @@ describe('GET /users/me', ()=>{
       .set('x-auth',users[1].tokens[0].token)
       .expect(200)
       .expect((res)=>{
-        console.log('res.boday: ',res.body);
+        // console.log('res.boday: ',res.body);
         expect(res.body._id).toBe(users[1]._id.toHexString());
         expect(res.body.email).toBe(users[1].email);
       }).end(done);
@@ -85,6 +86,63 @@ describe('GET /users/me', ()=>{
       .expect((res)=>{
         expect(res.body).toEqual({})
       })
+      .end(done);
+  });
+});
+
+describe('POST /users',()=>{
+
+  // need clear db before, now depend on get test to clear
+
+  it('should create a valid user',(done)=>{
+    var email="abc@abc.com";
+    var password="abc123!";
+
+    request(app)
+      .post('/users')
+      .send({email,password})
+      .expect(200)
+      .expect(res=>{
+        expect(res.headers['x-auth']).toExist;
+        expect(res.body._id).toExist;
+        expect(res.body.email).toBe(email);
+      })
+      .end((err)=>{
+        if(err) {
+          return done(err);
+        }
+        User.findOne({email}).then((user)=>{
+          // console.log('after find user: ',user);
+          expect(user).toExist;
+          expectChai(user.password).to.not.equal(password);
+          expect(user.email).toBe(email);
+          done();
+        })
+
+      });
+  });
+
+  it('should not create a invalid user',(done)=>{
+    var email= 'andrewsx@X.com';
+    var password= 'pass';
+
+    request(app)
+      .post('/users')
+      .send({email,password})
+      .expect(400)
+      .expect(res=>{
+        console.log('should not create a invalid user: ',res);
+      })
+      .end(done);
+  });
+  it('should return validation errors if request invalid',(done)=>{
+    request(app)
+      .post('/users')
+      .send({
+        email: users[0].email,
+        password: '12345678'
+      })
+      .expect(400)
       .end(done);
   });
 });
@@ -143,7 +201,7 @@ describe('DELETE /todos/:id', ()=>{
         Todo.findById(id).then(todo=>{
           // expect(todo).toNotExist();
           // expect(todo).to.be.a.null;
-          console.log(todo);
+          // console.log(todo);
           done();
         }).catch(e=>done(e));
       })
@@ -175,7 +233,7 @@ describe('PATCH /todos/:id', ()=>{
     .send({completed: true})
     .expect(200)
     .expect(res=>{
-      console.log(res.body);
+      // console.log(res.body);
       expect(res.body.todo.text).toBe(todos[0].text);
       expect(res.body.todo.completed).toBe(true);
       expectChai(res.body.todo.completedAt).to.be.a('number');
