@@ -65,7 +65,7 @@ userSchema.methods.toJSON = function () {
 
 userSchema.statics.findByToken = function (token) {
 
-  console.log('----------  findbyToken')
+  // console.log('----------  findbyToken')
   var User = this;
   var decoded;
 
@@ -89,6 +89,33 @@ userSchema.statics.findByToken = function (token) {
     'tokens.access': 'auth'
   });
 };
+
+userSchema.statics.findByCredentials = function(email, password) {
+  var User = this;
+  return User.findOne({email}).then((user)=>{
+    if(!user) {
+      console.log('findbyCredentials', 'can not find user by email');
+      return Promise.reject();
+    }
+
+    return new Promise((resolve, reject)=>{
+      bcrypt.compare(password, user.password, (err, res)=>{
+        // if(err) {
+        //   console.log('findbyCredentials', 'error ~!!!!!');
+        // }
+
+        if (res) {
+          console.log('findbyCredentials', 'resolve !!!!!!');
+          resolve(user);
+        } else {
+          console.log('findbyCredentials', 'reject !!!!!');
+          reject();   
+        }
+        
+      })
+    })
+  })
+}
 
 userSchema.pre('save', function (next) {
   var user = this;

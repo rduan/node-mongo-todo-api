@@ -56,6 +56,48 @@ app.post('/users', (req, res) => {
   })
 });
 
+
+//user login
+app.post('/users/login', (req,res)=>{
+
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user)=>{
+    // res.send(user);
+    // console.log('~~~~~ before generate auth token')
+
+    // carefully, user.generateAuthToken(), not User.generateAuthToken()
+    return user.generateAuthToken().then((token)=>{
+      res.header('x-auth',token).send(user);
+    })
+  }).catch((e)=>{
+    console.log('generate token error: ',e )
+    res.status(400).send();
+  });
+  // var user = new User(body);
+
+  // var token = user.generateAuthToken();
+
+  // User.findByToken(token).then((user)=>{
+  //   if(!user) {
+  //     console.log('can not find');
+  //     return Promise.reject();
+  //   }
+  //   // res.send(user);
+  //   req.user = user;
+  //   req.token = token;
+  // }).catch((e)=>{
+  //   res.status(401).send();
+  // });
+
+
+  
+  // res.send(req.user);
+
+});
+
+
+
 app.get('/todos', (req,res)=>{
   Todo.find().then((todos)=>{
     res.send({todos});
@@ -64,6 +106,10 @@ app.get('/todos', (req,res)=>{
     res.status(400).send(err);
   })
 });
+
+
+
+//
 
 app.get('/todos/:id', (req,res)=>{
   // res.send(req.params);
