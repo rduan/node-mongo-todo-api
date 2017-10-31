@@ -7,21 +7,25 @@ const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
 
 const users = [{
-  _id: new ObjectID(),
+  _id: userOneId,
   email: 'andrew@sx.com',
   password: 'passwdone',
   tokens: [{
     access: 'auth',
-    tokens: jwt.sign({ _id: userOneId, access: 'auth' }, 'saltseed').toString()
+    token: jwt.sign({ _id: userOneId, access: 'auth' }, 'secret').toString()
+    // token: jwt.sign({ _id: userOneId.toHexString(), access: 'auth' }, 'secret').toString()
   }]
+
+  // var access = 'auth';
+  // var token = jwt.sign({ _id: user._id.toHexString(), access }, 'secret').toString();
 },
 {
-  _id: new ObjectID(),
+  _id: userTwoId,
   email: 'ajack@sx.com',
   password: 'passwdtwo',
   tokens: [{
     access: 'auth',
-    tokens: jwt.sign({ _id: userOneId, access: 'auth' }, 'saltseed').toString()
+    token: jwt.sign({ _id: userTwoId.toHexString(), access: 'auth' }, 'secret').toString()
   }]
 }];
 

@@ -65,18 +65,19 @@ userSchema.methods.toJSON = function () {
 
 userSchema.statics.findByToken = function (token) {
 
-  console.log('xxxx---  findbyToken')
+  console.log('----------  findbyToken')
   var User = this;
   var decoded;
 
   try {
     decoded = jwt.verify(token, 'secret');
   } catch (e) {
-    // console.log('catought exception');
+    // console.log('catought exception while decode token');
     // console.log(e);
     // return new Promise((resolve, reject)=>{
     //   reject()
     // })
+    // console.log('in catch, decoded: ', decoded);
     return Promise.reject();
 
   }

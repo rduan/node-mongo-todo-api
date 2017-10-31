@@ -59,6 +59,36 @@ describe('Post/todos',()=>{
 
 });
 
+describe('GET /users/me', ()=>{
+  beforeEach(populateUsers);
+
+  it('should return user by valid token',(done)=>{
+    console.log(users[1]);
+    // console.log(users[1].tokens[0].token);
+
+    request(app)
+      .get('/users/me')
+      .set('x-auth',users[1].tokens[0].token)
+      .expect(200)
+      .expect((res)=>{
+        console.log('res.boday: ',res.body);
+        expect(res.body._id).toBe(users[1]._id.toHexString());
+        expect(res.body.email).toBe(users[1].email);
+      }).end(done);
+
+  });
+  it('should return 401 for unkonwn token',(done)=>{
+    request(app)
+      .get('/users/me')
+      .set('x-auth',users[0].tokens[0].token+'aa')
+      .expect(401)
+      .expect((res)=>{
+        expect(res.body).toEqual({})
+      })
+      .end(done);
+  });
+});
+
 describe('GET /todos', ()=>{
   it('should get all todos', (done)=>{
     request(app)
