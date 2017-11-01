@@ -284,7 +284,8 @@ describe('POST /users/login', ()=>{
 
         User.findById({_id: users[2]._id}).then((user)=>{
           // console.log('findby id user: ', user);
-          expectChai(user.tokens[0]).to.deep.include({
+          // because when user logged in ,a new token will be created , first token is generated when creating  user
+          expectChai(user.tokens[1]).to.deep.include({
             access: 'auth',
             token: res.headers['x-auth']
           });
@@ -314,6 +315,28 @@ describe('POST /users/login', ()=>{
 
     })
   });
+});
+
+describe('DELETE /users/me/token',()=>{
+  it('should remove auth token on logout', (done)=>{
+    //DELETE /user/me/token
+    // console.log(users[0])
+    request(app)
+      .delete('/users/me/token')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .end((err,res)=>{
+        if(err) {
+          return  done(err);
+        }
+        User.findById({_id: users[0]._id}).then((user)=>{
+          console.log(user);
+          expect(user.tokens.length).toBe(0);
+          done()
+        }).catch((e)=>done(e));
+
+      })
+  })
 });
 
 
