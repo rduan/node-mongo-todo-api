@@ -67,9 +67,11 @@ app.post('/users/login', (req,res)=>{
     // console.log('~~~~~ before generate auth token')
 
     // carefully, user.generateAuthToken(), not User.generateAuthToken()
-    return user.generateAuthToken().then((token)=>{
-      res.header('x-auth',token).send(user);
-    })
+
+    // return user.generateAuthToken().then((token)=>{
+    //   res.header('x-auth',token).send(user);
+    // })
+    return res.header('x-auth', user.tokens[0].token).send(user);
   }).catch((e)=>{
     console.log('generate token error: ',e )
     res.status(400).send();

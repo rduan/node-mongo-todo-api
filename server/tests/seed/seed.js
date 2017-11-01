@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
+const user3Id = new ObjectID();
 
 const users = [{
   _id: userOneId,
@@ -27,6 +28,15 @@ const users = [{
     access: 'auth',
     token: jwt.sign({ _id: userTwoId.toHexString(), access: 'auth' }, 'secret').toString()
   }]
+},
+{
+  _id: user3Id,
+  email: 'ajack3@sx.com',
+  password: 'password3',
+  tokens: [{
+    access: 'auth',
+    token: jwt.sign({ _id: user3Id.toHexString(), access: 'auth' }, 'secret').toString()
+  }]
 }];
 
 const todos = [{
@@ -47,7 +57,8 @@ const populateUsers = (done) => {
   User.remove({}).then(()=>{
     var userOne = new User(users[0]).save();
     var userTwo = new User(users[1]).save();
-    return Promise.all([userOne, userTwo])    
+    var user3 = new User(users[2]).save();
+    return Promise.all([userOne, userTwo, user3])    
   }).then(()=> done());
 }
 

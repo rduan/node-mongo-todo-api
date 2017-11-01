@@ -11,7 +11,13 @@ const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
 const User = require('./../models/user');
 
 
+// beforeEach(()=>{
+//   populateTodos;
+//   populateUsers;
+// });
+beforeEach(populateUsers);
 beforeEach(populateTodos);
+
 
 describe('Post/todos',()=>{
   it('should create a new todo',(done)=>{
@@ -61,7 +67,6 @@ describe('Post/todos',()=>{
 });
 
 describe('GET /users/me', ()=>{
-  beforeEach(populateUsers);
 
   it('should return user by valid token',(done)=>{
     // console.log(users[1]);
@@ -117,7 +122,7 @@ describe('POST /users',()=>{
           expectChai(user.password).to.not.equal(password);
           expect(user.email).toBe(email);
           done();
-        })
+        }).catch(e=>done(e))
 
       });
   });
@@ -131,7 +136,7 @@ describe('POST /users',()=>{
       .send({email,password})
       .expect(400)
       .expect(res=>{
-        console.log('should not create a invalid user: ',res);
+        // console.log('should not create a invalid user: ',res);
       })
       .end(done);
   });
@@ -255,5 +260,61 @@ describe('PATCH /todos/:id', ()=>{
         }).end(done);
   });
 });
+
+describe('POST /users/login', ()=>{
+  // beforeEach(populateUsers);
+
+  it('should login user and return auth token',(done)=>{
+    request(app)
+      .post('/users/login')
+      .send({
+        email: users[2].email,
+        password: users[2].password
+      })
+      .expect(200)
+      .expect((res)=>{
+        expect(res.headers['x-auth']).toExist;
+      })
+      .end((err,res)=>{
+        if(err) {
+          return done(err);
+        }
+
+        // console.log('user3Id: ', users[2]._id);
+
+        User.findById({_id: users[2]._id}).then((user)=>{
+          // console.log('findby id user: ', user);
+          expectChai(user.tokens[0]).to.deep.include({
+            access: 'auth',
+            token: res.headers['x-auth']
+          });
+          done();
+        }).catch((e)=>{
+          // console.log('find error:', e);
+          done(e);
+        });
+      })
+  });
+
+  it('should rject invalid login',(done)=>{
+    request(app)
+    .post('/users/login')
+    .send({
+      email: users[2].email,
+      password: users[1].password
+    })
+    .expect(400)
+    
+    .end((err,res)=>{
+      if(err) {
+        return done(err);
+      }
+      done()
+      // console.log('user3Id: ', users[2]._id);
+
+    })
+  });
+});
+
 
 
