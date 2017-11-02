@@ -167,18 +167,26 @@ describe('GET /todos', ()=>{
 });
 
 describe('GET /todos/:id',()=>{
-  it('should get todo', (done)=>{
+  it('should get todo ', (done)=>{
     request(app)
       .get(`/todos/${todos[0]._id.toHexString()}`)
+      .set('x-auth',users[0].tokens[0].token)
       .expect(200)
       .expect((res)=>{
         expect(res.body.todo.text).toBe(todos[0].text);
-      }).end(done);
+      }).end((err,res)=>{
+        if(!err) {
+          return done(err);
+        }
+
+        done();
+      });
   });
 
   it('should return 404 if id is invalid',(done)=>{
     request(app)
       .get(`/todos/1234567890`)
+      .set('x-auth',users[1].tokens[0].token)
       .expect(404)
       .end(done);
       
@@ -186,6 +194,7 @@ describe('GET /todos/:id',()=>{
   it('should return 404 if todo not found',(done)=>{
     request(app)
       .get(`/todos/${new ObjectID().toHexString()}`)
+      .set('x-auth',users[1].tokens[0].token)
       .expect(404)
       .end(done);
       
@@ -198,6 +207,7 @@ describe('DELETE /todos/:id', ()=>{
 
     request(app)
       .delete(`/todos/${id}`)
+      .set('x-auth',users[1].tokens[0].token)
       .expect(200)
       .expect((res)=>{
         expect(res.body.todo._id).toBe(id);
@@ -238,6 +248,7 @@ describe('PATCH /todos/:id', ()=>{
 
     request(app)
     .patch(`/todos/${hexId}`)
+    .set('x-auth',users[0].tokens[0].token)
     .send({completed: true})
     .expect(200)
     .expect(res=>{
@@ -254,6 +265,7 @@ describe('PATCH /todos/:id', ()=>{
     
         request(app)
         .patch(`/todos/${hexId}`)
+        .set('x-auth',users[1].tokens[0].token)
         .send({completed: false})
         .expect(200)
         .expect(res=>{
@@ -300,7 +312,7 @@ describe('POST /users/login', ()=>{
       })
   });
 
-  it('should rject invalid login',(done)=>{
+  it('should reject invalid login',(done)=>{
     request(app)
     .post('/users/login')
     .send({
@@ -333,7 +345,7 @@ describe('DELETE /users/me/token',()=>{
           return  done(err);
         }
         User.findById({_id: users[0]._id}).then((user)=>{
-          console.log(user);
+          // console.log(user);
           expect(user.tokens.length).toBe(0);
           done()
         }).catch((e)=>done(e));

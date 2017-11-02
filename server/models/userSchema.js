@@ -92,7 +92,7 @@ userSchema.statics.findByToken = function (token) {
 
   }
 
-  console.log('ok, found token: ', decoded);
+  // console.log('ok, found token: ', decoded);
   return User.findOne({
     '_id': decoded._id,
     'tokens.token': token,
@@ -104,7 +104,7 @@ userSchema.statics.findByCredentials = function(email, password) {
   var User = this;
   return User.findOne({email}).then((user)=>{
     if(!user) {
-      console.log('findbyCredentials', 'can not find user by email');
+      // console.log('findbyCredentials', 'can not find user by email');
       return Promise.reject();
     }
 
@@ -115,10 +115,10 @@ userSchema.statics.findByCredentials = function(email, password) {
         // }
 
         if (res) {
-          console.log('findbyCredentials', 'resolve !!!!!!');
+          // console.log('findbyCredentials', 'resolve !!!!!!');
           resolve(user);
         } else {
-          console.log('findbyCredentials', 'reject !!!!!');
+          // console.log('findbyCredentials', 'reject !!!!!');
           reject();   
         }
         
